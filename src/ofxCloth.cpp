@@ -4,19 +4,27 @@
 using namespace glm;
 
 void Clothing::setup( int w, int h, int numPartWidth, int numPartHeight ){
-	ball_pos = vec3(7,-5,0);
-	ball_radius = 4;
 	cloth1 = new Cloth(  w, h, numPartWidth, numPartHeight );
 }
 
-void Clothing::setPositionSphere(ofVec3f pos){
-	ball_pos[0] = (float)pos.x;
-	ball_pos[1] = (float)pos.y;
-	ball_pos[2] = (float)pos.z;
+void Clothing::setPositionSphere(vector<ofVec3f> pos){
+	ball_pos.clear();
+	for(int i = 0; i < pos.size(); i++) 
+	{
+		vec3 p(pos[i].x,pos[i].y,pos[i].z);
+		ball_pos.push_back(p);
+		//ball_pos[0] = (float)pos.x;
+		//ball_pos[1] = (float)pos.y;
+		//ball_pos[2] = (float)pos.z;
+	}
 }
 
-ofVec3f Clothing::getPositionSphere() {
-	return ofVec3f(ball_pos[0],ball_pos[1],ball_pos[2]);
+vector<ofVec3f> Clothing::getPositionSphere() {
+	vector<ofVec3f> vec;
+	for(int i = 0; i < ball_pos.size(); i++){
+		vec.push_back( ofVec3f(ball_pos[i][0],ball_pos[i][1],ball_pos[i][2]) );
+	}
+	return vec;
 }
 
 int Clothing::getPlaneWidth(){
@@ -27,11 +35,12 @@ int Clothing::getPlaneHeight(){
 	cloth1->getPointsHeight();
 }
 
-void Clothing::setRadiusSphere( float radius ) {
+void Clothing::setRadiusSphere( vector<float> radius ) {
+	ball_radius.clear();
 	ball_radius=radius;
 }
 
-float Clothing::getRadiusSphere(){
+vector<float> Clothing::getRadiusSphere(){
 	return ball_radius;
 }
 
@@ -47,9 +56,19 @@ void Clothing::windForce( ofVec3f dir, float time ){
 	cloth1->windForce(vec3(dir.x,dir.y,dir.z)*time);
 }
 
-void Clothing::sphereCollision( ofVec3f pos, float radius ){
+void Clothing::sphereCollision( vector<ofVec3f> pos, vector<float> radius ){
 	ball_radius=radius;
-	cloth1->ballCollision(vec3(pos.x,pos.y,pos.z),radius); 
+	vector<vec3> vv;
+	vector<float> rr;
+	for(int i = 0; i < pos.size(); i++){
+		vv.push_back(vec3(pos[i].x,pos[i].y,pos[i].z));
+		rr.push_back(radius[i]);
+	}
+	cloth1->ballCollision(vv,rr); 
+}
+
+void Clothing::pointCollision( ofVec3f center, ofVec3f coord, float surface ){
+	cloth1->dotCollision(vec3(center.x,center.y,center.z),vec3(coord.x,coord.y,coord.z),surface); 
 }
 
 void Clothing::constrainPoints( int index, ofVec3f offSetPos ) {
@@ -57,16 +76,11 @@ void Clothing::constrainPoints( int index, ofVec3f offSetPos ) {
 }
 
 void Clothing::drawCloth( bool wire ) {
+	ofPushMatrix();
 	if(wire)
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	else
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	cloth1->drawShaded();
-}
-
-void Clothing::drawSphere( ofVec3f pos ) {
-	ofPushMatrix();
-	ofTranslate(pos); 
-	ofDrawSphere( ball_radius-0.1 );
 	ofPopMatrix();
 }

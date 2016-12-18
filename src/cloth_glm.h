@@ -266,17 +266,32 @@ public:
 		}
 	}
 
-	void ballCollision(const vec3 center,const float radius )
+	void ballCollision(const vector<vec3> center,const vector<float> radius )
+	{
+		std::vector<Particle>::iterator particle;
+		for(int i = 0; i < center.size(); i++)
+		{
+			for(particle = particles.begin(); particle != particles.end(); particle++)
+			{
+				vec3 v = (*particle).getPos()-center[i];
+				float l = length(v);
+				if ( length(v) < radius[i]) 
+				{
+					(*particle).offsetPos(normalize(v)*(radius[i]-l));
+				}
+			}
+		}
+	}
+
+	void dotCollision(const vec3 center, const vec3 coord, const float surface)
 	{
 		std::vector<Particle>::iterator particle;
 		for(particle = particles.begin(); particle != particles.end(); particle++)
 		{
 			vec3 v = (*particle).getPos()-center;
-			float l = length(v);
-			if ( length(v) < radius) 
-			{
-				(*particle).offsetPos(normalize(v)*(radius-l));
-			}
+			if( v[0] == coord[0] && v[1] == coord[1] && v[2] == coord[2] )
+				(*particle).offsetPos(normalize(v)*(surface-length(v)));
 		}
 	}
+
 };

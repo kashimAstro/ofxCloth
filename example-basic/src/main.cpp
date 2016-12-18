@@ -64,7 +64,7 @@ class ofApp : public ofBaseApp{
 		}
 
 		void update() {
-			ofSetWindowTitle(ofToString(ofGetFrameRate()));
+			//ofSetWindowTitle(ofToString(ofGetFrameRate()));
 			model.update();
 	                animationPosition = ofMap(counter++,0,speedanim,0.0,1.0);
         	        if(counter>speedanim) counter=0;
