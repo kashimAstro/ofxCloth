@@ -32,7 +32,7 @@ int Clothing::getPlaneWidth(){
 }
 
 int Clothing::getPlaneHeight(){
-	cloth1->getPointsHeight();
+	return cloth1->getPointsHeight();
 }
 
 void Clothing::setRadiusSphere( vector<float> radius ) {
